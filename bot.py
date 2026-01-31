@@ -1,5 +1,5 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram.ext import Application, CommandHandler, ContextTypes
 
 TOKEN = "8547968244:AAG2f_9xEqOTQnpJeKNcp0pcBSSuNJVNN6k"
 CHANNEL_NAME = "Forex Gladiator"
@@ -10,11 +10,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🥇 *Forex Gladiator Gold Bot*\n\n"
         "📊 Professional XAUUSD (Gold) Analysis\n"
         "⚔️ Official Bot of *Forex Gladiator*\n\n"
-        "🤖 Choose an option below:\n\n"
+        "👇 Choose an option below:\n\n"
         "— — — — —\n\n"
         "🥇 *بوت فوركس غلاديتور للذهب*\n"
         "تحليل احترافي لزوج الذهب XAUUSD\n"
-        "البوت الرسمي لقناة *Forex Gladiator*"
+        "⚔️ البوت الرسمي لقناة *Forex Gladiator*"
     )
 
     keyboard = [
@@ -30,7 +30,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 def main():
-    app = ApplicationBuilder().token(TOKEN).build()
+    app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.run_polling()
 
