@@ -1,74 +1,44 @@
-import logging
-from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    MessageHandler,
-    ContextTypes,
-    filters
-)
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
-TOKEN = "8547968244:AAG2f_9xEqOTQnpJeKNcp0pcBSSuNJVNN6k"
-
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
-
-# ===== /start =====
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update, context):
+    # Create inline keyboard
     keyboard = [
-        [KeyboardButton("🇸🇦 العربية"), KeyboardButton("🇺🇸 English")]
+        [
+            InlineKeyboardButton("🇸🇦 العربية", callback_data='ar'),
+            InlineKeyboardButton("🇺🇸 English", callback_data='en')
+        ]
     ]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
+    # Send message with buttons
     await update.message.reply_text(
-        "🥇 Forex Gladiator Gold Bot\n\n"
-        "اختر اللغة / Choose language 👇",
+        "🥇 Forex Gladiator Gold Bot\n\nاختر اللغة / Choose language 👇",
         reply_markup=reply_markup
     )
 
-# ===== Language handler =====
-async def language_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
+# This will handle language selection
+async def button(update: Update, context):
+    query = update.callback_query
+    await query.answer()
 
-    if text == "🇸🇦 العربية":
-        await update.message.reply_text(
-            "✅ تم اختيار العربية\n\n"
-            "الخطة المجانية:\n"
-            "• نظرة عامة على الذهب\n"
-            "• توجه السوق اليومي\n\n"
-            "اكتب: تحليل الذهب"
-        )
-
-    elif text == "🇺🇸 English":
-        await update.message.reply_text(
-            "✅ English selected\n\n"
-            "Free Plan:\n"
-            "• General gold outlook\n"
-            "• Daily market bias\n\n"
-            "Type: Gold Analysis"
-        )
-
-# ===== Gold analysis (free demo) =====
-async def gold_analysis(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "📊 Gold Analysis (AI Generated)\n\n"
-        "• Market Bias: Bullish\n"
-        "• Key Zone: 2015 - 2035\n"
-        "• Note: This is a light free analysis\n\n"
-        "🔒 Pro & Elite unlock full signals"
-    )
+    if query.data == 'ar':
+        await query.edit_message_text(text="مرحبا بك في بوت الفوركس! 🇸🇦")
+    elif query.data == 'en':
+        await query.edit_message_text(text="Welcome to the Forex Gladiator Bot! 🇺🇸")
 
 def main():
-    app = Application.builder().token(TOKEN).build()
+    # Replace with your bot token
+    application = Application.builder().token('8547968244:AAG2f_9xEqOTQnpJeKNcp0pcBSSuNJVNN6k').build()
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & filters.Regex("تحليل الذهب|Gold Analysis"), gold_analysis))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, language_handler))
+    # Command handler for /start
+    application.add_handler(CommandHandler("start", start))
 
-    print("🤖 Bot is running...")
-    app.run_polling()
+    # Callback handler for button presses
+    application.add_handler(CallbackQueryHandler(button))
+
+    # Start polling for updates
+    application.run_polling()
 
 if __name__ == "__main__":
     main()
