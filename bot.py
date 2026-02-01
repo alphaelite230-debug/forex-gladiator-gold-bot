@@ -6,18 +6,17 @@ from telegram.ext import (
     ContextTypes,
 )
 import asyncio
-from datetime import datetime, time
+from datetime import datetime
 
 TOKEN = "8547968244:AAG2f_9xEqOTQnpJeKNcp0pcBSSuNJVNN6k"
 CHANNEL = "@FORE_XGLADIATOR"
 SUPPORT = "@FOREX_GLADIATOR_M"
 
-# تخزين المستخدمين
 USERS = set()
 USER_LANG = {}
 USER_PLAN = {}
 
-# ====== START ======
+# ===== START =====
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     USERS.add(chat_id)
@@ -25,118 +24,128 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     USER_PLAN.setdefault(chat_id, "FREE")
 
     keyboard = [
-        [InlineKeyboardButton("🇬🇧 English", callback_data="lang_en"),
-         InlineKeyboardButton("🇸🇦 عربي", callback_data="lang_ar")]
+        [
+            InlineKeyboardButton("🇬🇧 English", callback_data="lang_en"),
+            InlineKeyboardButton("🇸🇦 عربي", callback_data="lang_ar"),
+        ]
     ]
+
     await update.message.reply_text(
         "🥇 Forex Gladiator Gold Bot\n\nChoose language / اختر اللغة:",
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
-# ====== LANGUAGE ======
+# ===== LANGUAGE =====
 async def language(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    chat_id = query.message.chat.id
+    q = update.callback_query
+    chat_id = q.message.chat.id
 
-    if query.data == "lang_en":
+    if q.data == "lang_en":
         USER_LANG[chat_id] = "EN"
-        text = (
-            "🥇 *Forex Gladiator Gold Bot*\n\n"
-            "Choose an option:"
-        )
-        keyboard = main_menu_en()
+        text = "🥇 *Forex Gladiator Gold Bot*\n\nChoose an option:"
+        menu = main_menu_en()
     else:
         USER_LANG[chat_id] = "AR"
-        text = (
-            "🥇 *بوت فوركس غلاديتور للذهب*\n\n"
-            "اختر من القائمة:"
-        )
-        keyboard = main_menu_ar()
+        text = "🥇 *بوت فوركس غلاديتور للذهب*\n\nاختر من القائمة:"
+        menu = main_menu_ar()
 
-    await query.answer()
-    await query.edit_message_text(text, reply_markup=keyboard, parse_mode="Markdown")
+    await q.answer()
+    await q.edit_message_text(text, reply_markup=menu, parse_mode="Markdown")
 
-# ====== MENUS ======
+# ===== MENUS =====
 def main_menu_en():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("📊 Gold Analysis", callback_data="analysis")],
         [InlineKeyboardButton("💳 Plans & Pricing", callback_data="plans")],
-        [InlineKeyboardButton("📢 Join Channel", url=f"https://t.me/FORE_XGLADIATOR")]
+        [InlineKeyboardButton("📢 Join Channel", url="https://t.me/FORE_XGLADIATOR")],
     ])
 
 def main_menu_ar():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("📊 تحليل الذهب", callback_data="analysis")],
         [InlineKeyboardButton("💳 الخطط والأسعار", callback_data="plans")],
-        [InlineKeyboardButton("📢 دخول القناة", url=f"https://t.me/FORE_XGLADIATOR")]
+        [InlineKeyboardButton("📢 دخول القناة", url="https://t.me/FORE_XGLADIATOR")],
     ])
 
-# ====== ANALYSIS BUTTON ======
+# ===== ANALYSIS =====
 async def analysis(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    chat_id = query.message.chat.id
+    q = update.callback_query
+    chat_id = q.message.chat.id
     plan = USER_PLAN.get(chat_id, "FREE")
 
     if plan == "FREE":
         text = (
-            "🆓 *Free Gold Overview*\n\n"
-            "• Market bias: Neutral\n"
-            "• Gold is ranging today\n\n"
-            "🔒 Upgrade for full analysis"
+            "🆓 *Free Gold Insight*\n\n"
+            "• Market Bias: Neutral\n"
+            "• Gold is consolidating\n\n"
+            "🔒 Upgrade for full AI analysis"
         )
     else:
         text = (
             "📊 *AI Gold Analysis*\n\n"
             "• Bias: Bullish\n"
-            "• Buy Zone: 2015 - 2020\n"
+            "• Buy Zone: 2015 – 2020\n"
             "• TP: 2040\n"
             "• SL: 2005"
         )
 
-    await query.answer()
-    await query.edit_message_text(text, parse_mode="Markdown")
+    await q.answer()
+    await q.edit_message_text(text, parse_mode="Markdown")
 
-# ====== PLANS ======
+# ===== PLANS =====
 async def plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-
+    q = update.callback_query
     text = (
         "💳 *Subscription Plans*\n\n"
         "🆓 FREE\n"
         "• Daily bias\n"
-        "• Education\n\n"
+        "• Educational insights\n\n"
         "⚔️ PRO – $49\n"
-        "• Daily analysis\n"
+        "• Daily AI analysis\n"
         "• 1 AI trade/day\n\n"
         "👑 ELITE – $79\n"
-        "• Advanced analysis\n"
+        "• Advanced AI analysis\n"
         "• 2–3 AI trades/day\n\n"
         f"💬 After payment contact: {SUPPORT}"
     )
 
-    await query.answer()
-    await query.edit_message_text(text, parse_mode="Markdown")
+    await q.answer()
+    await q.edit_message_text(text, parse_mode="Markdown")
 
-# ====== DAILY AI MESSAGE ======
-def generate_ai_message(plan: str):
+# ===== AI MESSAGE =====
+def generate_ai_message(plan):
     if plan == "FREE":
-        return "🆓 Daily Gold Bias: Neutral\nStay cautious."
+        return "🆓 Daily Gold Bias: Neutral\nStay safe & manage risk."
     if plan == "PRO":
-        return "⚔️ PRO Signal:\nBuy Gold 2020\nSL 2005\nTP 2040"
-    return "👑 ELITE Signals:\nBuy 2020 / Buy 2012\nTP 2040 / 2060"
+        return "⚔️ PRO Signal:\nBuy Gold @2020\nSL 2005\nTP 2040"
+    return "👑 ELITE Signals:\nBuy 2020 & 2012\nTP 2040 / 2060"
 
-async def send_daily(context: ContextTypes.DEFAULT_TYPE):
-    for chat_id in USERS:
-        plan = USER_PLAN.get(chat_id, "FREE")
-        try:
-            await context.bot.send_message(
-                chat_id=chat_id,
-                text=generate_ai_message(plan)
-            )
-        except:
-            pass
+# ===== SCHEDULER LOOP =====
+async def scheduler(app):
+    sent_morning = False
+    sent_ny = False
 
-# ====== MAIN ======
+    while True:
+        now = datetime.utcnow().hour
+
+        if now == 9 and not sent_morning:
+            for chat_id in USERS:
+                await app.bot.send_message(chat_id, generate_ai_message(USER_PLAN.get(chat_id, "FREE")))
+            sent_morning = True
+
+        if now == 15 and not sent_ny:
+            for chat_id in USERS:
+                await app.bot.send_message(chat_id, generate_ai_message(USER_PLAN.get(chat_id, "FREE")))
+            sent_ny = True
+
+        if now != 9:
+            sent_morning = False
+        if now != 15:
+            sent_ny = False
+
+        await asyncio.sleep(60)
+
+# ===== MAIN =====
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
@@ -145,10 +154,7 @@ def main():
     app.add_handler(CallbackQueryHandler(analysis, pattern="analysis"))
     app.add_handler(CallbackQueryHandler(plans, pattern="plans"))
 
-    # تشغيل الإرسال مرتين يوميًا
-    app.job_queue.run_daily(send_daily, time(hour=9, minute=0))
-    app.job_queue.run_daily(send_daily, time(hour=15, minute=0))
-
+    app.create_task(scheduler(app))
     app.run_polling()
 
 if __name__ == "__main__":
