@@ -21,29 +21,27 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = (
             "🥇 *بوت فوركس غلاديتور للذهب*\n\n"
             "📊 تحليل الذهب XAUUSD بالذكاء الاصطناعي\n"
-            "⚔️ البوت الرسمي لقناة Forex Gladiator\n\n"
+            "⚔️ البوت الرسمي لقناة *Forex Gladiator*\n\n"
             "👇 اختر من القائمة:"
         )
         keyboard = [
             [InlineKeyboardButton("🥇 تحليل الذهب", callback_data="analysis")],
-            [InlineKeyboardButton("🆓 الخطة المجانية", callback_data="free")],
             [InlineKeyboardButton("💎 خطط الاشتراك", callback_data="plans")],
             [InlineKeyboardButton("🌐 اللغة", callback_data="lang")],
-            [InlineKeyboardButton("📢 القناة", url=CHANNEL_LINK)],
+            [InlineKeyboardButton("📢 قناة فوركس غلاديتور", url=CHANNEL_LINK)],
         ]
     else:
         text = (
             "🥇 *Forex Gladiator Gold Bot*\n\n"
             "📊 AI-Powered XAUUSD (Gold) Analysis\n"
-            "⚔️ Official Bot of Forex Gladiator\n\n"
+            "⚔️ Official Bot of *Forex Gladiator*\n\n"
             "👇 Choose an option:"
         )
         keyboard = [
             [InlineKeyboardButton("🥇 Gold Analysis", callback_data="analysis")],
-            [InlineKeyboardButton("🆓 Free Plan", callback_data="free")],
             [InlineKeyboardButton("💎 Subscription Plans", callback_data="plans")],
             [InlineKeyboardButton("🌐 Language", callback_data="lang")],
-            [InlineKeyboardButton("📢 Channel", url=CHANNEL_LINK)],
+            [InlineKeyboardButton("📢 Forex Gladiator Channel", url=CHANNEL_LINK)],
         ]
 
     await update.message.reply_text(
@@ -64,7 +62,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton("🇬🇧 English", callback_data="lang_en")],
             [InlineKeyboardButton("🇸🇦 عربي", callback_data="lang_ar")],
         ]
-        await query.message.reply_text("🌐 Choose language / اختر اللغة", reply_markup=InlineKeyboardMarkup(keyboard))
+        await query.message.reply_text(
+            "🌐 Choose language / اختر اللغة",
+            reply_markup=InlineKeyboardMarkup(keyboard),
+        )
 
     elif query.data == "lang_en":
         context.user_data["lang"] = "en"
@@ -77,113 +78,119 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # 🥇 ANALYSIS
     elif query.data == "analysis":
         text = (
-            "🔒 *تحليل الذهب المتقدم*\n\n"
-            "متاح فقط لمشتركي Pro و Elite.\n\n"
-            "🤖 تحليل ذكي يشمل:\n"
-            "• اتجاه الذهب\n"
-            "• مناطق قوية\n"
-            "• أفكار صفقات\n\n"
-            "👇 للترقية:"
-            if lang == "ar" else
-            "🔒 *Advanced Gold Analysis*\n\n"
-            "Available for Pro & Elite members only.\n\n"
-            "🤖 AI provides:\n"
+            "🔒 *Gold Analysis (AI Powered)*\n\n"
+            "Available for *Pro & Elite* members only.\n\n"
+            "🤖 Includes:\n"
             "• Gold bias\n"
             "• Key levels\n"
-            "• Trade ideas\n\n"
-            "👇 Upgrade:"
+            "• AI trade ideas\n\n"
+            "👇 Upgrade to unlock"
+            if lang == "en"
+            else
+            "🔒 *تحليل الذهب (ذكاء اصطناعي)*\n\n"
+            "متاح فقط لمشتركي *Pro* و *Elite*.\n\n"
+            "🤖 يشمل:\n"
+            "• اتجاه الذهب\n"
+            "• مناطق مهمة\n"
+            "• أفكار صفقات\n\n"
+            "👇 قم بالترقية"
         )
 
-        keyboard = [[InlineKeyboardButton("💎 View Plans", callback_data="plans")]]
-        await query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
-
-    # 🆓 FREE PLAN
-    elif query.data == "free":
-        text = (
-            "🆓 *الخطة المجانية*\n\n"
-            "📊 اتجاه الذهب اليوم (AI)\n"
-            "🧠 تعليق ذكي مختصر\n"
-            "📚 معلومة تعليمية\n\n"
-            "❌ بدون صفقات\n"
-            "❌ بدون دخول وخروج\n\n"
-            "👇 بدك تحليل كامل؟"
-            if lang == "ar" else
-            "🆓 *Free Plan*\n\n"
-            "📊 Daily gold direction (AI)\n"
-            "🧠 Short AI comment\n"
-            "📚 Educational tip\n\n"
-            "❌ No trade signals\n"
-            "❌ No entry / SL / TP\n\n"
-            "👇 Want full access?"
-        )
-
-        keyboard = [[InlineKeyboardButton("💎 Upgrade", callback_data="plans")]]
+        keyboard = [[InlineKeyboardButton("💎 Plans", callback_data="plans")]]
         await query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
 
     # 💎 PLANS
     elif query.data == "plans":
         text = (
-            "💎 *خطط الاشتراك*\n\n"
-            "⚔️ Pro – 49 USDT\n"
-            "• صفقات AI\n"
-            "• دخول / وقف / هدف\n"
-            "• تحليل يومي\n\n"
-            "👑 Elite – 79 USDT\n"
-            "• كل مزايا Pro\n"
-            "• صفقات أقوى\n"
-            "• تحليل متقدم\n\n"
-            "👇 اختر الخطة:"
-            if lang == "ar" else
             "💎 *Subscription Plans*\n\n"
-            "⚔️ Pro – 49 USDT\n"
-            "• AI trade signals\n"
-            "• Entry / SL / TP\n"
-            "• Daily analysis\n\n"
-            "👑 Elite – 79 USDT\n"
-            "• Everything in Pro\n"
-            "• High accuracy setups\n"
-            "• Advanced analysis\n\n"
-            "👇 Choose your plan:"
+            "🆓 Free – AI market overview\n"
+            "⚔️ Pro – 49 USDT (Signals + Analysis)\n"
+            "👑 Elite – 79 USDT (Advanced AI setups)"
+            if lang == "en"
+            else
+            "💎 *خطط الاشتراك*\n\n"
+            "🆓 مجانية – نظرة عامة بالذكاء الاصطناعي\n"
+            "⚔️ Pro – 49 USDT (تحليل + صفقات)\n"
+            "👑 Elite – 79 USDT (تحليل متقدم عالي الدقة)"
         )
 
         keyboard = [
+            [InlineKeyboardButton("🆓 Free", callback_data="free")],
             [InlineKeyboardButton("⚔️ Pro – 49 USDT", callback_data="pro")],
             [InlineKeyboardButton("👑 Elite – 79 USDT", callback_data="elite")],
         ]
 
         await query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
 
-    # PAYMENT
-    elif query.data in ["pro", "elite"]:
-        price = "49 USDT" if query.data == "pro" else "79 USDT"
-        plan = "Pro" if query.data == "pro" else "Elite"
-
+    # 🆓 FREE PLAN CONTENT
+    elif query.data == "free":
         text = (
-            f"{plan} – {price}\n\nاختر شبكة الدفع:"
-            if lang == "ar" else
-            f"{plan} – {price}\n\nChoose payment network:"
+            "🆓 *Free AI Gold Update*\n\n"
+            "🤖 Today's AI Insight:\n"
+            "• Gold bias: Neutral\n"
+            "• Market volatility: Medium\n"
+            "• No clear setup yet\n\n"
+            "📚 Tip:\n"
+            "Wait for confirmation near key levels.\n\n"
+            "❌ No trade signals"
+            if lang == "en"
+            else
+            "🆓 *التحديث المجاني للذهب*\n\n"
+            "🤖 نظرة الذكاء الاصطناعي:\n"
+            "• الاتجاه: حيادي\n"
+            "• التذبذب: متوسط\n"
+            "• لا توجد صفقة واضحة\n\n"
+            "📚 نصيحة:\n"
+            "انتظر تأكيد عند المناطق المهمة.\n\n"
+            "❌ بدون صفقات"
         )
+
+        keyboard = [[InlineKeyboardButton("💎 Upgrade", callback_data="plans")]]
+        await query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+
+    # PRO / ELITE
+    elif query.data in ["pro", "elite"]:
+        if query.data == "pro":
+            plan = "Pro"
+            price = "49 USDT"
+            benefits = (
+                "• AI gold bias\n• Trade signals\n• Entry / SL / TP\n• Daily analysis"
+                if lang == "en"
+                else
+                "• اتجاه الذهب\n• صفقات\n• دخول ووقف وخروج\n• تحليل يومي"
+            )
+        else:
+            plan = "Elite"
+            price = "79 USDT"
+            benefits = (
+                "• Everything in Pro\n• Advanced AI setups\n• Higher accuracy signals"
+                if lang == "en"
+                else
+                "• كل ميزات Pro\n• صفقات متقدمة\n• دقة أعلى"
+            )
 
         keyboard = [
             [InlineKeyboardButton("TRC20", callback_data=f"pay_{plan}_trc")],
             [InlineKeyboardButton("BEP20 / ERC20", callback_data=f"pay_{plan}_evm")],
         ]
 
-        await query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
-
-    elif "pay_" in query.data:
-        net = "TRC20" if "trc" in query.data else "BEP20 / ERC20"
-        addr = USDT_TRC20 if "trc" in query.data else USDT_EVM
-
-        text = (
-            f"💳 الدفع\n\nالشبكة: {net}\nالعنوان:\n{addr}\n\n"
-            f"بعد الدفع تواصل مع {SUPPORT_USER}"
-            if lang == "ar" else
-            f"💳 Payment\n\nNetwork: {net}\nAddress:\n{addr}\n\n"
-            f"After payment contact {SUPPORT_USER}"
+        await query.message.reply_text(
+            f"💎 *{plan} – {price}*\n\n{benefits}\n\nChoose network:",
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode="Markdown",
         )
 
-        await query.message.reply_text(text)
+    # PAYMENT
+    elif "pay_" in query.data:
+        network = "TRC20" if "trc" in query.data else "BEP20 / ERC20"
+        address = USDT_TRC20 if "trc" in query.data else USDT_EVM
+        price = "49 USDT" if "Pro" in query.data else "79 USDT"
+
+        await query.message.reply_text(
+            f"💳 *Payment*\n\nPlan price: {price}\nNetwork: {network}\n\nAddress:\n`{address}`\n\n"
+            f"After payment contact {SUPPORT_USER}",
+            parse_mode="Markdown",
+        )
 
 
 def main():
