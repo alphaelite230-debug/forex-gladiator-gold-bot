@@ -1,66 +1,61 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler
-import logging
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    CallbackQueryHandler,
+    ContextTypes,
+)
 
-# Setup logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
+TOKEN = "8547968244:AAG2f_9xEqOTQnpJeKNcp0pcBSSuNJVNN6k"
 
-# Token and Channel User for later use
-TOKEN = '8547968244:AAG2f_9xEqOTQnpJeKNcp0pcBSSuNJVNN6k'
-CHANNEL_USER = "@ForexGladiator"
-
-# Language Buttons
-def language_buttons():
+# ===== /start =====
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
-        [InlineKeyboardButton("العربية", callback_data='arabic')],
-        [InlineKeyboardButton("English", callback_data='english')],
+        [
+            InlineKeyboardButton("🇸🇦 عربي", callback_data="lang_ar"),
+            InlineKeyboardButton("🇺🇸 English", callback_data="lang_en"),
+        ]
     ]
-    return InlineKeyboardMarkup(keyboard)
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
-# Start Command Handler
-async def start(update: Update, context):
-    chat_id = update.message.chat_id
-
-    # Send the welcome message with language options
     await update.message.reply_text(
-        "🥇 Forex Gladiator Gold Bot\n\n"
-        "اهلا بك في بوت فوركس جلادياتور\n"
-        "اختر اللغة / Choose language 👇", 
-        reply_markup=language_buttons()
+        "🥇 Forex Gladiator Gold Bot\n\nاختر اللغة / Choose language 👇",
+        reply_markup=reply_markup
     )
 
-# Language Selection Handler
-async def button(update: Update, context):
+# ===== Language handler =====
+async def language_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    choice = query.data
-
-    if choice == "arabic":
-        text = "اهلا بك في بوت فوركس جلادياتور باللغة العربية."
-    elif choice == "english":
-        text = "Welcome to the Forex Gladiator bot in English."
-    
-    # Send message based on user language choice
     await query.answer()
-    await query.edit_message_text(text=text)
 
-# Helper Function for Job Queue (if needed)
-async def send_daily(update: Update, context):
-    # You can replace this with a message to be sent daily
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="هذا رسالة يومية")
+    if query.data == "lang_ar":
+        text = (
+            "🔥 أهلاً بك في بوت فوركس جلادياتور 🔥\n\n"
+            "هذا البوت يقدم:\n"
+            "📊 تحليلات يومية للذهب\n"
+            "🤖 ذكاء اصطناعي احترافي\n\n"
+            "🚀 سيتم إضافة الخطط والدفع قريباً"
+        )
+    else:
+        text = (
+            "🔥 Welcome to Forex Gladiator Bot 🔥\n\n"
+            "This bot provides:\n"
+            "📊 Daily gold analysis\n"
+            "🤖 AI-powered insights\n\n"
+            "🚀 Plans & payments coming soon"
+        )
 
-# Main function to start the bot
-async def main():
+    await query.edit_message_text(text)
+
+# ===== Main =====
+def main():
     application = Application.builder().token(TOKEN).build()
 
-    # Handlers
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(button))
-    
-    # Start polling (keep bot running)
-    await application.run_polling()
+    application.add_handler(CallbackQueryHandler(language_handler))
+
+    print("🤖 Bot is running...")
+    application.run_polling()
 
 if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+    main()
