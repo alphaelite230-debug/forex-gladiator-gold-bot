@@ -1,78 +1,64 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    CallbackQueryHandler,
-    ContextTypes,
-)
+import logging
+from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler
+from telegram.ext import JobQueue
+import asyncio
 
-TOKEN = "PUT_YOUR_BOT_TOKEN_HERE"
+# حط توكن البوت هنا
+API_TOKEN = '8547968244:AAG2f_9xEqOTQnpJeKNcp0pcBSSuNJVNN6k'
 
-# ---------- START ----------
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data["started"] = True
+# إعدادات اللوج
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
+# كوماند /start
+async def start(update: Update, context: CallbackContext):
+    user = update.message.from_user
+    logger.info(f"User {user.id} has started the bot.")
+    
+    # إعداد الكيبورد لاختيار اللغة
     keyboard = [
-        [InlineKeyboardButton("🥇 Gold Analysis", callback_data="gold")],
-        [InlineKeyboardButton("💎 Plans", callback_data="plans")],
-        [InlineKeyboardButton("🌐 Language", callback_data="lang")],
+        [KeyboardButton("🇺🇸 English"), KeyboardButton("🇪🇬 العربية")]
     ]
-
+    reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
+    
+    # إرسال رسالة الترحيب وطلب اللغة
     await update.message.reply_text(
-        "🥇 Forex Gladiator Gold Bot\n\n"
-        "📊 Professional XAUUSD Analysis\n\n"
-        "👇 Choose an option:",
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        "Welcome to the bot! Choose your language:",
+        reply_markup=reply_markup
     )
 
-# ---------- BUTTON HANDLER ----------
-async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
+# معالج اختيار اللغة
+async def language_handler(update: Update, context: CallbackContext):
+    text = update.message.text
+    if text == "🇺🇸 English":
+        await update.message.reply_text("You have selected English.")
+    elif text == "🇪🇬 العربية":
+        await update.message.reply_text("تم اختيار اللغة العربية.")
 
-    data = query.data
+# كوماند /help
+async def help_command(update: Update, context: CallbackContext):
+    await update.message.reply_text('Help message.')
 
-    if data == "gold":
-        await query.edit_message_text(
-            "🔒 Gold Analysis\n\n"
-            "Advanced gold analysis is available for Pro & Elite members only.\n\n"
-            "💎 Upgrade your plan to unlock:\n"
-            "• Daily AI gold bias\n"
-            "• Smart supply & demand zones\n"
-            "• AI-based entries"
-        )
+# معالج الأخطاء
+def error_handler(update: object, context: CallbackContext):
+    logger.error(f"Update {update} caused error {context.error}")
 
-    elif data == "plans":
-        await query.edit_message_text(
-            "💎 Membership Plans\n\n"
-            "🆓 Free:\n"
-            "• Daily market sentiment (AI)\n\n"
-            "🥈 Pro – 49$\n"
-            "• Daily gold bias (AI)\n"
-            "• Key zones\n\n"
-            "🥇 Elite – 79$\n"
-            "• Full AI analysis\n"
-            "• Smart entries\n"
-            "• Priority support\n\n"
-            "💬 After payment contact: @FOREX_GLADIATOR_M"
-        )
+# دالة الرئيسية لتشغيل البوت
+async def main():
+    application = Application.builder().token(API_TOKEN).build()
 
-    elif data == "lang":
-        await query.edit_message_text(
-            "🌐 اختر اللغة:\n\n"
-            "Arabic 🇸🇦 / English 🇺🇸\n\n"
-            "(جاهزة ومفعّلة ✅)"
-        )
+    # إعداد JobQueue (إذا كنت بحاجة لمهام مجدولة)
+    job_queue = JobQueue()
 
-# ---------- MAIN ----------
-def main():
-    app = ApplicationBuilder().token(TOKEN).build()
+    # إضافة المعالجات
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('help', help_command))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, language_handler))
+    
+    # بدء البوت
+    await application.start_polling()
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(buttons))
-
-    print("🤖 Bot is running...")
-    app.run_polling()
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    asyncio.run(main())
