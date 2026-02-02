@@ -7,7 +7,7 @@ from telegram.ext import (
 )
 import logging
 
-TOKEN = "PUT_YOUR_TOKEN_HERE"
+TOKEN = "8547968244:AAG2f_9xEqOTQnpJeKNcp0pcBSSuNJVNN6k"
 
 logging.basicConfig(level=logging.INFO)
 
