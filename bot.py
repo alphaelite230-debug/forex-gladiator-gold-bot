@@ -5,165 +5,167 @@ from telegram.ext import (
     CallbackQueryHandler,
     ContextTypes,
 )
+import logging
 
-TOKEN = "8547968244:AAG2f_9xEqOTQnpJeKNcp0pcBSSuNJVNN6k"
+TOKEN = "PUT_YOUR_TOKEN_HERE"
 
-CHANNEL_URL = "https://t.me/FORE_XGLADIATOR"
-SUPPORT_USER = "@FOREX_GLADIATOR_M"
+logging.basicConfig(level=logging.INFO)
 
+# ====== TEXTS ======
+TEXTS = {
+    "welcome": {
+        "ar": "🔥 أهلاً بك في بوت فوركس جلادياتور 🔥\n\nاختر لغتك 👇",
+        "en": "🔥 Welcome to Forex Gladiator Bot 🔥\n\nChoose your language 👇",
+    },
+    "plans_title": {
+        "ar": "اختر الخطة المناسبة لك 👇",
+        "en": "Choose the plan that suits you 👇",
+    },
+    "free": {
+        "ar": (
+            "🆓 *الخطة المجانية*\n\n"
+            "✔️ تحليل عام للذهب\n"
+            "✔️ تحديد الاتجاه اليومي\n"
+            "✔️ محتوى تعليمي\n\n"
+            "❌ بدون صفقات أو نقاط دخول"
+        ),
+        "en": (
+            "🆓 *Free Plan*\n\n"
+            "✔️ General gold analysis\n"
+            "✔️ Daily trend direction\n"
+            "✔️ Educational content\n\n"
+            "❌ No trade entries"
+        ),
+    },
+    "pro": {
+        "ar": (
+            "🥈 *خطة Pro*\n\n"
+            "✔️ تحليل يومي احترافي\n"
+            "✔️ دعم ومقاومة\n"
+            "✔️ سيناريوهات تداول\n\n"
+            "💰 السعر: 49 USDT / شهرياً"
+        ),
+        "en": (
+            "🥈 *Pro Plan*\n\n"
+            "✔️ Professional daily analysis\n"
+            "✔️ Support & resistance\n"
+            "✔️ Trading scenarios\n\n"
+            "💰 Price: 49 USDT / month"
+        ),
+    },
+    "elite": {
+        "ar": (
+            "🥇 *خطة Elite*\n\n"
+            "✔️ فرص مفلترة\n"
+            "✔️ دقة عالية\n"
+            "✔️ تحديثات أسرع\n\n"
+            "💰 السعر: 79 USDT / شهرياً"
+        ),
+        "en": (
+            "🥇 *Elite Plan*\n\n"
+            "✔️ Filtered opportunities\n"
+            "✔️ High precision\n"
+            "✔️ Faster updates\n\n"
+            "💰 Price: 79 USDT / month"
+        ),
+    },
+    "payment": {
+        "ar": (
+            "💳 *الدفع عبر USDT (TRC20)*\n\n"
+            "📥 أرسل المبلغ إلى:\n"
+            "`YOUR_USDT_ADDRESS`\n\n"
+            "📩 ثم أرسل صورة التحويل للدعم."
+        ),
+        "en": (
+            "💳 *Payment via USDT (TRC20)*\n\n"
+            "📥 Send to:\n"
+            "`YOUR_USDT_ADDRESS`\n\n"
+            "📩 Then send payment proof to support."
+        ),
+    },
+}
 
-# ====== START ======
+# ====== HANDLERS ======
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
-        [
-            InlineKeyboardButton("🇦🇪 عربي", callback_data="lang_ar"),
-            InlineKeyboardButton("🇬🇧 English", callback_data="lang_en"),
-        ]
+        [InlineKeyboardButton("🇦🇪 عربي", callback_data="lang_ar")],
+        [InlineKeyboardButton("🇬🇧 English", callback_data="lang_en")],
     ]
     await update.message.reply_text(
-        "🥇 Forex Gladiator Gold Bot\n\nاختر اللغة / Choose language 👇",
+        TEXTS["welcome"]["ar"],
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
-
-# ====== LANGUAGE ======
-async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    lang = query.data
-    context.user_data["lang"] = lang
-
-    if lang == "lang_ar":
-        text = (
-            "🔥 أهلاً بك في بوت فوركس جلادياتور 🔥\n\n"
-            "📊 تحليلات يومية للذهب XAUUSD\n"
-            "🤖 مدعوم بالذكاء الاصطناعي\n\n"
-            "اختر من القائمة 👇"
-        )
-    else:
-        text = (
-            "🔥 Welcome to Forex Gladiator Bot 🔥\n\n"
-            "📊 Daily Gold (XAUUSD) Analysis\n"
-            "🤖 AI-powered insights\n\n"
-            "Choose an option 👇"
-        )
-
-    await query.edit_message_text(
-        text=text,
-        reply_markup=main_menu(lang),
-    )
-
-
-# ====== MAIN MENU ======
-def main_menu(lang):
-    if lang == "lang_ar":
-        keyboard = [
-            [InlineKeyboardButton("📊 تحليل الذهب", callback_data="gold")],
-            [InlineKeyboardButton("💎 الخطط والأسعار", callback_data="plans")],
-            [InlineKeyboardButton("🆓 الخطة المجانية", callback_data="free")],
-            [InlineKeyboardButton("📞 الدعم", callback_data="support")],
-            [InlineKeyboardButton("📢 قناتنا", url=CHANNEL_URL)],
-        ]
-    else:
-        keyboard = [
-            [InlineKeyboardButton("📊 Gold Analysis", callback_data="gold")],
-            [InlineKeyboardButton("💎 Plans & Pricing", callback_data="plans")],
-            [InlineKeyboardButton("🆓 Free Plan", callback_data="free")],
-            [InlineKeyboardButton("📞 Support", callback_data="support")],
-            [InlineKeyboardButton("📢 Our Channel", url=CHANNEL_URL)],
-        ]
-
-    return InlineKeyboardMarkup(keyboard)
-
-
-# ====== BUTTON HANDLERS ======
 async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    lang = context.user_data.get("lang", "lang_ar")
+    data = query.data
 
-    if query.data == "gold":
-        msg = (
-            "🔒 تحليل الذهب متاح فقط لمشتركي Pro و Elite\n\n"
-            "💎 يشمل:\n"
-            "• الاتجاه اليومي\n"
-            "• مناطق عرض وطلب\n"
-            "• نقاط دخول ذكية"
-            if lang == "lang_ar"
-            else
-            "🔒 Gold analysis is for Pro & Elite members only\n\n"
-            "💎 Includes:\n"
-            "• Daily bias\n"
-            "• Supply & demand zones\n"
-            "• Smart entries"
+    if data.startswith("lang_"):
+        lang = data.split("_")[1]
+        context.user_data["lang"] = lang
+
+        keyboard = [
+            [InlineKeyboardButton("🆓 Free", callback_data="plan_free")],
+            [InlineKeyboardButton("🥈 Pro", callback_data="plan_pro")],
+            [InlineKeyboardButton("🥇 Elite", callback_data="plan_elite")],
+        ]
+
+        await query.edit_message_text(
+            TEXTS["plans_title"][lang],
+            reply_markup=InlineKeyboardMarkup(keyboard),
         )
 
-    elif query.data == "plans":
-        msg = (
-            "💎 الخطط:\n\n"
-            "🆓 مجاني\n"
-            "• تحليل خفيف\n\n"
-            "🥈 Pro – 49$\n"
-            "• تحليل يومي\n"
-            "• صفقات\n\n"
-            "🥇 Elite – 79$\n"
-            "• كل شيء + أولوية"
-            if lang == "lang_ar"
-            else
-            "💎 Plans:\n\n"
-            "🆓 Free\n"
-            "• Light analysis\n\n"
-            "🥈 Pro – $49\n"
-            "• Daily analysis\n"
-            "• Trades\n\n"
-            "🥇 Elite – $79\n"
-            "• Everything + priority"
+    elif data.startswith("plan_"):
+        lang = context.user_data.get("lang", "en")
+        plan = data.split("_")[1]
+
+        keyboard = [[InlineKeyboardButton("🔙 Back", callback_data="back_plans")]]
+
+        if plan in ["pro", "elite"]:
+            keyboard.insert(
+                0,
+                [InlineKeyboardButton("💳 Pay USDT", callback_data="pay")],
+            )
+
+        await query.edit_message_text(
+            TEXTS[plan][lang],
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup(keyboard),
         )
 
-    elif query.data == "free":
-        msg = (
-            "🆓 الخطة المجانية:\n\n"
-            "• نظرة عامة على الذهب\n"
-            "• اتجاه عام للسوق\n"
-            "• بدون صفقات"
-            if lang == "lang_ar"
-            else
-            "🆓 Free Plan:\n\n"
-            "• Gold overview\n"
-            "• Market bias\n"
-            "• No trades"
+    elif data == "pay":
+        lang = context.user_data.get("lang", "en")
+        await query.edit_message_text(
+            TEXTS["payment"][lang],
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("🔙 Back", callback_data="back_plans")]]
+            ),
         )
 
-    elif query.data == "support":
-        msg = (
-            f"📞 للتواصل والدعم:\n{SUPPORT_USER}"
-            if lang == "lang_ar"
-            else
-            f"📞 Support:\n{SUPPORT_USER}"
+    elif data == "back_plans":
+        lang = context.user_data.get("lang", "en")
+        keyboard = [
+            [InlineKeyboardButton("🆓 Free", callback_data="plan_free")],
+            [InlineKeyboardButton("🥈 Pro", callback_data="plan_pro")],
+            [InlineKeyboardButton("🥇 Elite", callback_data="plan_elite")],
+        ]
+        await query.edit_message_text(
+            TEXTS["plans_title"][lang],
+            reply_markup=InlineKeyboardMarkup(keyboard),
         )
-
-    else:
-        msg = "—"
-
-    await query.edit_message_text(
-        text=msg,
-        reply_markup=main_menu(lang),
-    )
-
 
 # ====== MAIN ======
 def main():
     app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(set_language, pattern="^lang_"))
     app.add_handler(CallbackQueryHandler(buttons))
 
     print("🤖 Bot is running...")
     app.run_polling()
-
 
 if __name__ == "__main__":
     main()
